@@ -8,7 +8,7 @@ from . import views
 app_name = 'lite'
 urlpatterns=[
     path(r'', views.signup, name = 'signup'),
-    # url(r'^accounts/login/$', views.login, {"next_page": '/'}), 
+    path(r'login/', views.login_user, name = 'login'), 
 ]
 
 if settings.DEBUG:
