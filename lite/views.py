@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.forms import UserCreationForm
 from lite.forms import SignUpForm, LoginForm
 from django.contrib.auth import authenticate, login
+from .models import Image
 
 # Create your views here.
 def signup(request):
@@ -17,5 +18,10 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'registration/registration_form.html', {'form': form})
+
+def index(request):
+    all_captions = Image.get_captions()
+    
+    return render(request,' index.html')
 
 
