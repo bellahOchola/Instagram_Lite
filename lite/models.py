@@ -10,7 +10,7 @@ class Image(models.Model):
     caption = HTMLField()
     comments = models.TextField()
 
-     def __str__(self):
+    def __str__(self):
         return self.title
 
     class Meta:

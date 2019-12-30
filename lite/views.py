@@ -21,7 +21,7 @@ def signup(request):
 
 def index(request):
     all_captions = Image.get_captions()
-    
-    return render(request,' index.html')
+
+    return render(request, 'index.html')
 
 
