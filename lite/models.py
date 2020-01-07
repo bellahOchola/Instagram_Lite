@@ -1,37 +1,87 @@
 from django.db import models
 from django.contrib.auth.models import User
-from tinymce.models import HTMLField
-from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-# Create your models here.
-class Image(models.Model):
-    image = models.ImageField(upload_to = 'images/')
-    title = models.CharField(max_length = 50)
-    caption = HTMLField()
-    comments = models.TextField()
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    profile_picture = models.ImageField(upload_to='images/', default='default.png')
+    bio = models.TextField(max_length=500, default="My Bio", blank=True)
+    name = models.CharField(blank=True, max_length=120)
+    location = models.CharField(max_length=60, blank=True)
 
     def __str__(self):
-        return self.title
+        return f'{self.user.username} Profile'
 
-    class Meta:
-        ordering =['title']
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            Profile.objects.create(user=instance)
 
-    def save_caption(self):
-        self.save()
+    @receiver(post_save, sender=User)
+    def save_user_profile(sender, instance, **kwargs):
+        instance.profile.save()
 
-    def delete_caption(self):
+    def save_profile(self):
+        self.user
+
+    def delete_profile(self):
         self.delete()
 
     @classmethod
-    def get_captions(cls):
-        captions = cls.objects.all()
+    def search_profile(cls, name):
+        return cls.objects.filter(user__username__icontains=name).all()
 
-        return captions
-    
+class Caption(models.Model):
+    image = models.ImageField(upload_to='posts/')
+    name = models.CharField(max_length=250, blank=True)
+    caption = models.CharField(max_length=250, blank=True)
+    likes = models.ManyToManyField(User, related_name='likes', blank=True, )
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts')
+    created = models.DateTimeField(auto_now_add=True, null=True)
 
-class Profile(models.Model):
-    profile_pic = models.ImageField(upload_to = 'images/')
-    bio =  models.TextField()
-    location = models.CharField(max_length=100)
+    class Meta:
+        ordering = ["-pk"]
+
+    def get_absolute_url(self):
+        return f"/post/{self.id}"
+
+    @property
+    def get_all_comments(self):
+        return self.comments.all()
+
+    def save_image(self):
+        self.save()
+
+    def delete_image(self):
+        self.delete()
+
+    def total_likes(self):
+        return self.likes.count()
+
+    def __str__(self):
+        return f'{self.user.name} Caption'
 
 
+
+class Comment(models.Model):
+    comment = models.TextField()
+    post = models.ForeignKey(Caption, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='comments')
+    created = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f'{self.user.name} Post'
+
+    class Meta:
+        ordering = ["-pk"]
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='following')
+    followed = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='followers')
+
+    def __str__(self):
+        return f'{self.follower} Follow'
