@@ -32,5 +32,6 @@ class Image(models.Model):
 class Profile(models.Model):
     profile_pic = models.ImageField(upload_to = 'images/')
     bio =  models.TextField()
+    location = models.CharField(max_length=100)
 
 

@@ -10,7 +10,7 @@
                     Upload Image
                 </button>
                 <div class="modal fade" id="Upload" tabindex="-1" role="dialog"
-                     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -23,7 +23,6 @@
                                 <form action="" method="post" enctype="multipart/form-data" novalidate>
                                     {% csrf_token %}
                                     {{ form|crispy}}
-                                    <!-- {{ form.caption }} -->
                                     <button class="btn btn-sm btn-success">Upload</button>
                                     <button type="button" class="btn btn-sm btn-outline-danger" data-dismiss="modal">
                                         Close
@@ -34,4 +33,16 @@
                     </div>
                 </div>
             </div>
-    {% endblock %}
+            {% for caption in captions %}
+            <div class="card mb-4">
+                <div class="card-body mb-4">
+                    <img src="{{caption.image.url}}" style="" class="card-img" width="100%" />
+                    <p>{{caption.caption}}</p>
+                </div>
+            </div>
+            {% empty %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -10,7 +10,8 @@ app_name = 'lite'
 urlpatterns=[
     path('', views.signup, name='signup'),
     path('account/', include('django.contrib.auth.urls')),
-    path('index/', views.index, name='main')
+    path('index/', views.index, name='main'),
+    path('profile/', views.profile, name='profile')
 ]
 
 if settings.DEBUG:

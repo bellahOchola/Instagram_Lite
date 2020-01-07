@@ -27,12 +27,11 @@ def index(request):
         form = UploadImage(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
-            post.user = request.user.profile
             post.save()
             return HttpResponseRedirect(request.path_info)
     else:
         form = UploadImage()
 
-    return render(request, 'index.html', {'form':form})
+    return render(request, 'index.html', {'form':form}, {'captions':all_captions})
 
 
